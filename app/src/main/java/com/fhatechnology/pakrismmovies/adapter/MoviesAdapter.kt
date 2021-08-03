@@ -1,0 +1,61 @@
+package com.fhatechnology.pakrismmovies.adapter
+
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
+import androidx.recyclerview.widget.RecyclerView
+import com.fhatechnology.pakrismmovies.R
+import com.fhatechnology.pakrismmovies.model.Movies
+import com.fhatechnology.pakrismmovies.ui.MovieDetailsActivity
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.item_list_movies.view.*
+
+class MoviesAdapter(private val moviesList : List<Movies>) :
+    RecyclerView.Adapter<MoviesAdapter.MovieViewHolder>(){
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
+        val movieView = LayoutInflater.from(parent.context).inflate(R.layout.item_list_movies, parent,false)
+        return MovieViewHolder(movieView)
+
+    }
+
+    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+
+        holder.movieName.text = moviesList[position].original_title
+        val releaseDate: ArrayList<String>  = moviesList[position].release_date.split('-') as ArrayList<String>
+        holder.movieYear.text = releaseDate[0]
+        holder.id.text = moviesList[position].id.toString()
+
+        Picasso.get().load(BASE_IMAGE_URL + moviesList[position].poster_path).into(holder.poster)
+
+    }
+
+    override fun getItemCount(): Int {
+        return moviesList.size
+    }
+
+    inner class MovieViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView){
+
+        val poster : ImageView = itemView.poster
+        val movieName : TextView = itemView.movieName
+        val movieYear : TextView = itemView.movieYear
+        val id : TextView = itemView.movieId
+
+        init {
+            itemView.setOnClickListener{
+
+                val movieDetailsIntent = Intent(it.context, MovieDetailsActivity:: class.java)
+                movieDetailsIntent.putExtra("id",itemView.movieId.text)
+                startActivity(it.context,movieDetailsIntent,null)
+            }
+        }
+    }
+
+    companion object {
+        const val BASE_IMAGE_URL = "https://image.tmdb.org/t/p/w300"
+    }
+}
